@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN">
+    <Properties>
+        <Property name="default-pattern">[%-5level] %d{yyyy-MM-dd'T'HH:mm:ss.SSS} [%t] %c{1} %msg%n %t %X %n</Property>
+        <Property name="file-size">250 MB</Property>
+        <Property name="json-file-size">50 MB</Property>
+        <Property name="app-name">ejb-playground</Property>
+    </Properties>
+    <Appenders>
+        <Console name="console-log" target="SYSTEM_OUT">
+            <PatternLayout pattern="${default-pattern}" />
+        </Console>
+    </Appenders>
+    <Loggers>
+        <Logger name="console" level="debug" additivity="false">
+            <appender-ref ref="console-log" level="info" />
+        </Logger>
+        <Root level="info" additivity="false">
+            <AppenderRef ref="console-log" />
+        </Root>
+    </Loggers>
+</Configuration>

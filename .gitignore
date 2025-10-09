@@ -1,0 +1,49 @@
+*.class
+
+# Mobile Tools for Java (J2ME)
+.mtj.tmp/
+
+# Package Files #
+*.jar
+*.war
+*.ear
+
+target/
+# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
+hs_err_pid*
+/bin
+*.class
+
+.classpath
+.project
+build/
+lib/
+logs/
+testout/
+.idea
+target/
+
+.cache
+.externalToolBuilders/
+application/
+.settings/
+.gradle/
+
+# netbeans
+*.iml
+nb-configuration.xml
+/Cilia/CiliaIntegrador/BradescoClientQA/nbproject/private/
+/Cilia/BradescoWSClient/nbproject/private/
+/Cilia/BradescoWSClient/dist/
+/Cilia/RsaWSClient/nbproject/private/
+/Cilia/RsaWSClient/dist/
+/Cilia/Tomada3Client/nbproject/private/
+/Cilia/CiliaIntegrador-CriacaoOrcamento/WebservicesClientTest/BradescoWSClient/dist/
+/Cilia/CiliaIntegrador-CriacaoOrcamento/WebservicesClientTest/BradescoWSClient/nbproject/private/
+/CiliaIntegrador/CiliaIntegrador-CriacaoOrcamento/WebservicesClientTest/BradescoWSClient/dist/
+/CiliaIntegrador/CiliaIntegrador-CriacaoOrcamento/WebservicesClientTest/BradescoWSClient/nbproject/private/
+/CiliaIntegrador/CiliaIntegrador-CriacaoOrcamento/CriacaoOrcamentoTestes/BradescoWSClient/dist/
+/CiliaIntegrador/CiliaIntegrador-CriacaoOrcamento/CriacaoOrcamentoTestes/BradescoWSClient/nbproject/private/
+/CiliaIntegrador/CiliaIntegrador-CriacaoOrcamento/Tests/BradescoWSClient/nbproject/private/.factorypath
+**/cacerts.jks
+**/.factorypath
