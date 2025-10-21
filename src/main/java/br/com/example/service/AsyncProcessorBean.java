@@ -1,21 +1,14 @@
 package br.com.example.service;
 
-import br.com.example.ejb.MainEJB;
 import br.com.example.model.Task;
+import br.com.example.util.ThreadContextScope;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.ThreadContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.ejb.AsyncResult;
 import javax.ejb.Asynchronous;
-import javax.ejb.ConcurrencyManagement;
-import javax.ejb.LocalBean;
-import javax.ejb.Singleton;
 import javax.ejb.Stateless;
-import java.security.SecureRandom;
 import java.util.Map;
-import java.util.Random;
 import java.util.concurrent.Future;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -29,23 +22,19 @@ public class AsyncProcessorBean implements AsyncProcessor {
     @Asynchronous
     public Future<Long> processAsync(Map<String, String> contextMap, Task task) {
 
-        try {
-//            ThreadContext.getContext().putAll(contextMap);
-            ThreadContext.putAll(contextMap);
+        try(ThreadContextScope contextScope = new ThreadContextScope(contextMap)) {
 
             ThreadLocalRandom random = ThreadLocalRandom.current();
             long processId = random.nextLong(0,10000);
             simulateProcessing(processId,task);
             AsyncResult<Long> asyncResult = new AsyncResult<>(processId);
             return asyncResult;
-        } finally {
-            ThreadContext.clearMap();
         }
     }
 
     private void simulateProcessing(long processId,Task task) {
         try {
-            ThreadContext.put("processId", String.valueOf(processId));
+            ThreadContextScope.put("processId", String.valueOf(processId));
             logger.info("->Iniciando processamento: "+task.toJson());
             Thread.sleep(ThreadLocalRandom.current().nextLong(500)); // Simula um processamento demorado
             logger.info("==Processamento finalizado"+task.toJson());

@@ -2,6 +2,7 @@ package br.com.example.ejb;
 
 import br.com.example.model.Task;
 import br.com.example.service.AsyncProcessor;
+import br.com.example.util.ThreadContextScope;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.ThreadContext;
 
@@ -27,26 +28,27 @@ public class MainEJBService implements MainEJB {
     public void execute() {
 
         try {
-            Map<String, String> baseContext = ThreadContext.getContext();
-            baseContext.put("_modulename","ejb-playground");
+            ThreadContextScope.put("_modulename", "ejb-playground");
 
             List<Future<Long>> listOfFuture = new ArrayList<Future<Long>>();
             List<Task> tasks = getTasks();
             for (Task task : tasks) {
-                Map<String, String> contextMap = new HashMap<>(baseContext); //executando copia defensiva do mapa
-                contextMap.put("taskId", task.getId());
-                contextMap.put("taskDescription", task.getDescription());
-                Future<Long> future = processor.processAsync(contextMap, task);
+                Map<String, String> innerBaseContextMap = new HashMap<>(ThreadContextScope.getCurrentContextMap()); //executando copia defensiva do mapa
+                innerBaseContextMap.put("taskId", task.getId());
+                innerBaseContextMap.put("taskDescription", task.getDescription());
+                Future<Long> future = processor.processAsync(innerBaseContextMap, task);
                 listOfFuture.add(future);
             }
 //            for (Future<Long> future : listOfFuture) {
 //                logger.info(String.format("Get future: %s", future.get()));
 //
 //            }
+
+            final Map<String, String> baseContext = ThreadContextScope.getCurrentContextMap();//caso utilize um novo processo async
             CompletableFuture[] futures = listOfFuture.stream()
                     .map(future -> CompletableFuture.supplyAsync(() -> {
-                        try {
-                            Long result = future.get(30, TimeUnit.SECONDS); //NBão funciona no Glassfish
+                        try (ThreadContextScope contextScope = new ThreadContextScope(baseContext)) {
+                            Long result = future.get(30, TimeUnit.SECONDS); //Não funciona no Glassfish
                             logger.info(String.format("Get future: %s", result));
                             return result;
                         } catch (Exception e) {
@@ -57,13 +59,13 @@ public class MainEJBService implements MainEJB {
                     .toArray(CompletableFuture[]::new);
 
             CompletableFuture.allOf(futures).join();
-            ThreadContext.putAll(baseContext); //restaurando contexto base da thread que foi limpo no processor
+
             logger.info(String.format("All futures completed: %d", tasks.size()));
 
         } catch (Exception e) {
             logger.error("Deu pane", e);
         } finally {
-            ThreadContext.clearMap();
+            ThreadContextScope.clearMap();
         }
 
     }
