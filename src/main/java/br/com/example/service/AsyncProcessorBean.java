@@ -17,6 +17,7 @@ import java.security.SecureRandom;
 import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.Future;
+import java.util.concurrent.ThreadLocalRandom;
 
 
 @Stateless
@@ -29,16 +30,16 @@ public class AsyncProcessorBean implements AsyncProcessor {
     public Future<Long> processAsync(Map<String, String> contextMap, Task task) {
 
         try {
-            ThreadContext.getContext().putAll(contextMap);
-            ThreadContext.put("taskId", task.getId());
-            ThreadContext.put("taskDescription", task.getDescription());
-            Random random = new SecureRandom();
-            long processId = random.nextLong();
+//            ThreadContext.getContext().putAll(contextMap);
+            ThreadContext.putAll(contextMap);
+
+            ThreadLocalRandom random = ThreadLocalRandom.current();
+            long processId = random.nextLong(0,10000);
             simulateProcessing(processId,task);
             AsyncResult<Long> asyncResult = new AsyncResult<>(processId);
             return asyncResult;
         } finally {
-            ThreadContext.getContext().clear();
+            ThreadContext.clearMap();
         }
     }
 
@@ -46,7 +47,7 @@ public class AsyncProcessorBean implements AsyncProcessor {
         try {
             ThreadContext.put("processId", String.valueOf(processId));
             logger.info("->Iniciando processamento: "+task.toJson());
-            Thread.sleep(2000); // Simula um processamento demorado
+            Thread.sleep(ThreadLocalRandom.current().nextLong(500)); // Simula um processamento demorado
             logger.info("==Processamento finalizado"+task.toJson());
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
