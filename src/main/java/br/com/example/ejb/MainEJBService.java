@@ -27,8 +27,8 @@ public class MainEJBService implements MainEJB {
     @Override
     public void execute() {
 
-        try {
-            ThreadContextScope.put("_modulename", "ejb-playground");
+        ThreadContextScope.put("_modulename", "ejb-playground");
+        try (ThreadContextScope contextScope = ThreadContextScope.createNew()) {
 
             List<Future<Long>> listOfFuture = new ArrayList<Future<Long>>();
             List<Task> tasks = getTasks();
@@ -47,7 +47,7 @@ public class MainEJBService implements MainEJB {
             final Map<String, String> baseContext = ThreadContextScope.getCurrentContextMap();//caso utilize um novo processo async
             CompletableFuture[] futures = listOfFuture.stream()
                     .map(future -> CompletableFuture.supplyAsync(() -> {
-                        try (ThreadContextScope contextScope = new ThreadContextScope(baseContext)) {
+                        try (ThreadContextScope ctx = new ThreadContextScope(baseContext)) {
                             Long result = future.get(30, TimeUnit.SECONDS); //Não funciona no Glassfish
                             logger.info(String.format("Get future: %s", result));
                             return result;
@@ -64,8 +64,6 @@ public class MainEJBService implements MainEJB {
 
         } catch (Exception e) {
             logger.error("Deu pane", e);
-        } finally {
-            ThreadContextScope.clearMap();
         }
 
     }

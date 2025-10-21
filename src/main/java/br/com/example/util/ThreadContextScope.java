@@ -20,6 +20,10 @@ public class ThreadContextScope implements AutoCloseable{
         ThreadContext.putAll(baseContext);
     }
 
+    public static ThreadContextScope createNew(){
+        return new ThreadContextScope(ThreadContextScope.getCurrentContextMap());
+    }
+
     public static void put(String key, String value){
         ThreadContext.put(key,value);
     }
