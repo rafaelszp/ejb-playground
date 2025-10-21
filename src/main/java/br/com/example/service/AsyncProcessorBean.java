@@ -3,7 +3,6 @@ package br.com.example.service;
 import br.com.example.model.Task;
 import br.com.example.util.ThreadContextScope;
 import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.ThreadContext;
 
 import javax.ejb.AsyncResult;
 import javax.ejb.Asynchronous;

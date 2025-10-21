@@ -4,7 +4,6 @@ import br.com.example.model.Task;
 import br.com.example.service.AsyncProcessor;
 import br.com.example.util.ThreadContextScope;
 import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.ThreadContext;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
