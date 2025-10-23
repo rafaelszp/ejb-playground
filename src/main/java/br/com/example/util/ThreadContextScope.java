@@ -5,7 +5,7 @@ import org.apache.logging.log4j.ThreadContext;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ThreadContextScope implements AutoCloseable{
+public class ThreadContextScope implements AutoCloseable {
 
     private  Map<String,String> baseContext;
 
