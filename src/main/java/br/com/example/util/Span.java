@@ -31,9 +31,9 @@ public class Span {
 
     public String getReport() {
         StringBuilder sb = new StringBuilder();
-        sb.append(" - Execution Summary: ");
+        sb.append(" [Execution Summary: ");
         printNode(sb, 0);
-        sb.append("}");
+        sb.append("]");
         return sb.toString();
     }
 

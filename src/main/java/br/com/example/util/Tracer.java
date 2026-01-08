@@ -97,7 +97,7 @@ public class Tracer {
             StackTraceElement caller = stackTrace[3];
             String className = caller.getClassName();
             String simpleClassName = className.substring(className.lastIndexOf('.') + 1);
-            return simpleClassName + "#" + caller.getMethodName();
+            return simpleClassName + "::" + caller.getMethodName();
         }
         return "unknown";
     }
