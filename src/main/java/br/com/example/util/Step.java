@@ -4,19 +4,19 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-public class Stopwatch {
+public class Step {
     private final String name;
     private final long startTime;
     private long elapsedTime;
-    private final List<Stopwatch> children = new ArrayList<>();
+    private final List<Step> children = new ArrayList<>();
 
-    private Stopwatch(String name) {
+    private Step(String name) {
         this.name = name;
         this.startTime = System.nanoTime();
     }
 
-    public static Stopwatch create(String name) {
-        return new Stopwatch(name);
+    public static Step create(String name) {
+        return new Step(name);
     }
 
     public void stop() {
@@ -25,7 +25,7 @@ public class Stopwatch {
         }
     }
 
-    public void addChild(Stopwatch child) {
+    public void addChild(Step child) {
         this.children.add(child);
     }
 
@@ -43,7 +43,7 @@ public class Stopwatch {
         sb.append("-> ").append(name)
                 .append(": ").append(formatDuration(elapsedTime));
 
-        for (Stopwatch child : children) {
+        for (Step child : children) {
             child.printNode(sb, level + 1);
         }
     }

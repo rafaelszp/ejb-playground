@@ -2,7 +2,7 @@ package br.com.example.ejb;
 
 import br.com.example.model.Task;
 import br.com.example.service.AsyncProcessor;
-import br.com.example.util.ExecutionTimer;
+import br.com.example.util.Tracer;
 import br.com.example.util.ThreadContextScope;
 import org.apache.logging.log4j.LogManager;
 
@@ -27,7 +27,7 @@ public class MainEJBService implements MainEJB {
     @Override
     public void execute() {
 
-        ExecutionTimer.start("execute");
+        Tracer.start("execute");
         ThreadContextScope.put("_modulename", "ejb-playground");
         try (ThreadContextScope contextScope = ThreadContextScope.createNew()) {
 
@@ -67,15 +67,15 @@ public class MainEJBService implements MainEJB {
         } catch (Exception e) {
             logger.error("Deu pane", e);
         } finally {
-            ExecutionTimer.stop();
-            logger.info(ExecutionTimer.getSummary());
+            Tracer.stop();
+            logger.info(Tracer.getSummary());
 //            logger.info(ThreadSafeExecutionTimer.getSummary());
         }
 
     }
 
     private List<Task> getTasks() throws Exception {
-        try(AutoCloseable timer = ExecutionTimer.measure()) {
+        try(AutoCloseable timer = Tracer.measure()) {
             List<Task> tasks = new ArrayList<>();
             for (int i = 0; i < 10; i++) {
                 Task task = new Task();

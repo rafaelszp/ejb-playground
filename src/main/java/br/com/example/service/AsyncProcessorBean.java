@@ -1,7 +1,7 @@
 package br.com.example.service;
 
 import br.com.example.model.Task;
-import br.com.example.util.ExecutionTimer;
+import br.com.example.util.Tracer;
 import br.com.example.util.ThreadContextScope;
 import io.opentelemetry.api.GlobalOpenTelemetry;
 import io.opentelemetry.api.metrics.LongCounter;
@@ -40,7 +40,7 @@ public class AsyncProcessorBean implements AsyncProcessor {
     @Override
     @Asynchronous
     public Future<Long> processAsync(Map<String, String> contextMap, Task task){
-        ExecutionTimer.start();
+        Tracer.start();
         try(ThreadContextScope contextScope = new ThreadContextScope(contextMap)) {
 
             ThreadLocalRandom random = ThreadLocalRandom.current();
@@ -51,13 +51,13 @@ public class AsyncProcessorBean implements AsyncProcessor {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }finally {
-            ExecutionTimer.stop();
-            logger.info("AsyncProcessorBean::processAsync"+ ExecutionTimer.getSummary());
+            Tracer.stop();
+            logger.info("AsyncProcessorBean::processAsync"+ Tracer.getSummary());
         }
     }
 
     private void simulateProcessing(long processId,Task task) {
-        try(AutoCloseable t = ExecutionTimer.measure()){
+        try(AutoCloseable t = Tracer.measure()){
             ThreadContextScope.put("processId", String.valueOf(processId));
             logger.info("->Iniciando processamento: "+task.toJson());
             Thread.sleep(ThreadLocalRandom.current().nextLong(500)); // Simula um processamento demorado

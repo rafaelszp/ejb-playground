@@ -3,10 +3,10 @@ package br.com.example.util;
 import java.util.ArrayDeque;
 import java.util.Deque;
 
-public class ExecutionTimer {
+public class Tracer {
 
-    private static final ThreadLocal<Deque<Stopwatch>> STACK = ThreadLocal.withInitial(ArrayDeque::new);
-    private static final ThreadLocal<Stopwatch> ROOT = new ThreadLocal<>();
+    private static final ThreadLocal<Deque<Step>> STACK = ThreadLocal.withInitial(ArrayDeque::new);
+    private static final ThreadLocal<Step> ROOT = new ThreadLocal<>();
 
     // --- ABORDAGEM A: Try-with-resources ---
     // Com nome explícito
@@ -26,13 +26,13 @@ public class ExecutionTimer {
     * */
     public static AutoCloseable measure(String name) {
         start(name);
-        return ExecutionTimer::stop; // Chama stop() ao fechar o bloco
+        return Tracer::stop; // Chama stop() ao fechar o bloco
     }
 
     // Com nome automático (pega o nome do método)
     public static AutoCloseable measure() {
         start(getCallerMethodName());
-        return ExecutionTimer::stop;
+        return Tracer::stop;
     }
 
     // --- ABORDAGEM B: Manual Start/Stop ---
@@ -52,8 +52,8 @@ public class ExecutionTimer {
 
     // Inicia com nome explícito
     public static void start(String name) {
-        Stopwatch node = Stopwatch.create(name);
-        Deque<Stopwatch> stack = STACK.get();
+        Step node = Step.create(name);
+        Deque<Step> stack = STACK.get();
 
         if (stack.isEmpty()) {
             // Se a pilha está vazia, este é o novo Pai de Todos
@@ -69,9 +69,9 @@ public class ExecutionTimer {
 
     // Para o cronômetro atual (topo da pilha)
     public static void stop() {
-        Deque<Stopwatch> stack = STACK.get();
+        Deque<Step> stack = STACK.get();
         if (!stack.isEmpty()) {
-            Stopwatch node = stack.pop();
+            Step node = stack.pop();
             node.stop();
 
             // Não limpamos o ROOT aqui. Deixamos ele vivo para o getSummary().
@@ -79,7 +79,7 @@ public class ExecutionTimer {
     }
 
     public static String getSummary() {
-        Stopwatch root = ROOT.get();
+        Step root = ROOT.get();
 
         // Garante a limpeza para evitar Memory Leak no servidor
         ROOT.remove();
