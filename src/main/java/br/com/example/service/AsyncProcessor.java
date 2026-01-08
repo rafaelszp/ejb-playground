@@ -8,6 +8,6 @@ import java.util.concurrent.Future;
 public interface AsyncProcessor {
 
 
-    public Future<Long> processAsync(Map<String,String> contextMap, Task task);
+    public Future<Long> processAsync(Map<String,String> contextMap, Task task) throws Exception;
 
 }
