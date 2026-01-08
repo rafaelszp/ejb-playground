@@ -5,8 +5,8 @@ import java.util.Deque;
 
 public class Tracer {
 
-    private static final ThreadLocal<Deque<Step>> STACK = ThreadLocal.withInitial(ArrayDeque::new);
-    private static final ThreadLocal<Step> ROOT = new ThreadLocal<>();
+    private static final ThreadLocal<Deque<Span>> STACK = ThreadLocal.withInitial(ArrayDeque::new);
+    private static final ThreadLocal<Span> ROOT = new ThreadLocal<>();
 
     // --- ABORDAGEM A: Try-with-resources ---
     // Com nome explícito
@@ -52,8 +52,8 @@ public class Tracer {
 
     // Inicia com nome explícito
     public static void start(String name) {
-        Step node = Step.create(name);
-        Deque<Step> stack = STACK.get();
+        Span node = Span.create(name);
+        Deque<Span> stack = STACK.get();
 
         if (stack.isEmpty()) {
             // Se a pilha está vazia, este é o novo Pai de Todos
@@ -69,9 +69,9 @@ public class Tracer {
 
     // Para o cronômetro atual (topo da pilha)
     public static void stop() {
-        Deque<Step> stack = STACK.get();
+        Deque<Span> stack = STACK.get();
         if (!stack.isEmpty()) {
-            Step node = stack.pop();
+            Span node = stack.pop();
             node.stop();
 
             // Não limpamos o ROOT aqui. Deixamos ele vivo para o getSummary().
@@ -79,7 +79,7 @@ public class Tracer {
     }
 
     public static String getSummary() {
-        Step root = ROOT.get();
+        Span root = ROOT.get();
 
         // Garante a limpeza para evitar Memory Leak no servidor
         ROOT.remove();

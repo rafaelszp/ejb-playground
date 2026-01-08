@@ -4,19 +4,19 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-public class Step {
+public class Span {
     private final String name;
     private final long startTime;
     private long elapsedTime;
-    private final List<Step> children = new ArrayList<>();
+    private final List<Span> children = new ArrayList<>();
 
-    private Step(String name) {
+    private Span(String name) {
         this.name = name;
         this.startTime = System.nanoTime();
     }
 
-    public static Step create(String name) {
-        return new Step(name);
+    public static Span create(String name) {
+        return new Span(name);
     }
 
     public void stop() {
@@ -25,7 +25,7 @@ public class Step {
         }
     }
 
-    public void addChild(Step child) {
+    public void addChild(Span child) {
         this.children.add(child);
     }
 
@@ -43,7 +43,7 @@ public class Step {
         sb.append("-> ").append(name)
                 .append(": ").append(formatDuration(elapsedTime));
 
-        for (Step child : children) {
+        for (Span child : children) {
             child.printNode(sb, level + 1);
         }
     }
